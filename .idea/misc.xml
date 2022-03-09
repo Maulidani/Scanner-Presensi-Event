@@ -3,7 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Project AndroidStudio/ScannerPresensiEvent/app/src/main/res/layout/activity_scanner.xml" value="0.10104166666666667" />
+        <entry key="..\:/Project AndroidStudio/ScannerPresensiEvent/app/src/main/res/drawable/background_scan_manual.xml" value="0.2265625" />
+        <entry key="..\:/Project AndroidStudio/ScannerPresensiEvent/app/src/main/res/layout/activity_main.xml" value="0.18" />
+        <entry key="..\:/Project AndroidStudio/ScannerPresensiEvent/app/src/main/res/layout/activity_scanner.xml" value="0.25" />
+        <entry key="..\:/Project AndroidStudio/ScannerPresensiEvent/app/src/main/res/layout/activity_splash_screen.xml" value="0.18" />
       </map>
     </option>
   </component>

@@ -34,7 +34,6 @@ public class ScannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scanner);
         getSupportActionBar().hide();
 
-
         layoutScanner = findViewById(R.id.layoutScanner);
         CodeScannerView scannerView = findViewById(R.id.scanner);
 
@@ -60,10 +59,10 @@ public class ScannerActivity extends AppCompatActivity {
 
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
-
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -87,6 +86,5 @@ public class ScannerActivity extends AppCompatActivity {
         codeScanner.releaseResources();
         super.onPause();
     }
-
 
 }
