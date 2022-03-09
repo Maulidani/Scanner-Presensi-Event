@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.app.scannerpresensievent.R
@@ -25,13 +26,24 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
 
+        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), 1);
+        }
+
         btnStartScan.setOnClickListener {
-            startActivity(
-                Intent(
-                    applicationContext,
-                    ScannerActivity::class.java
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(applicationContext, "Izinkan Permission Camera", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+
+                startActivity(
+                    Intent(
+                        applicationContext,
+                        ScannerActivity::class.java
+                    )
                 )
-            )
+            }
+
         }
         btnScanned.setOnClickListener {
             startActivity(
@@ -48,9 +60,6 @@ class MainActivity : AppCompatActivity() {
                     AboutActivity::class.java
                 )
             )
-        }
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), 1);
         }
     }
 }

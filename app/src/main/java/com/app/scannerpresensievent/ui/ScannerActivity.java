@@ -57,9 +57,9 @@ public class ScannerActivity extends AppCompatActivity {
             }
         });
 
-        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
-        }
+//        if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+//            requestPermissions(new String[]{Manifest.permission.CAMERA}, 1);
+//        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
