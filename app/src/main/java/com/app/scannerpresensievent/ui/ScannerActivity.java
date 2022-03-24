@@ -10,14 +10,23 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.app.scannerpresensievent.R;
+import com.app.scannerpresensievent.model.DataModel;
+import com.app.scannerpresensievent.model.ResponseModel;
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.google.zxing.Result;
+import com.skripsi.traditionalfood.network.ApiClient;
+import com.skripsi.traditionalfood.network.ApiService;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ScannerActivity extends AppCompatActivity {
 
@@ -45,7 +54,7 @@ public class ScannerActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getApplicationContext(), result.getText(), Toast.LENGTH_LONG).show();
+                        scanner(result.getText());
                     }
                 });
             }
@@ -85,6 +94,39 @@ public class ScannerActivity extends AppCompatActivity {
     protected void onPause() {
         codeScanner.releaseResources();
         super.onPause();
+    }
+
+    private void scanner(String idKegiatan) {
+
+        ApiService api = ApiClient.INSTANCE.getInstances();
+        Call<ResponseModel> call = api.scanner(idKegiatan);
+        call.enqueue(new Callback<ResponseModel>() {
+            @Override
+            public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
+
+                if (response.isSuccessful()) {
+                    String message = response.body().getMessage();
+
+                    if (message.equals("Success")) {
+                        DataModel data = response.body().getData();
+                        Toast.makeText(getApplicationContext(), data.getStatus(), Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Gagal", Toast.LENGTH_LONG).show();
+                    }
+                    Log.e("onResponse: ", response.body().toString());
+                } else {
+
+                    Toast.makeText(getApplicationContext(), "Gagal", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseModel> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Log.e("onResponse: ", t.toString());
+
+            }
+        });
     }
 
 }
