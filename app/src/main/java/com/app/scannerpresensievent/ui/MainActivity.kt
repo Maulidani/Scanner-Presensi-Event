@@ -16,9 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    val btnStartScan: MaterialButton by lazy { findViewById(R.id.btnStartScan) }
-    val btnScanned: MaterialButton by lazy { findViewById(R.id.btnScanned) }
-    val btnAbout: MaterialButton by lazy { findViewById(R.id.btnAbout) }
+    private val btnStartScan: MaterialButton by lazy { findViewById(R.id.btnStartScan) }
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,23 +41,6 @@ class MainActivity : AppCompatActivity() {
                     )
                 )
             }
-
-        }
-        btnScanned.setOnClickListener {
-            startActivity(
-                Intent(
-                    applicationContext,
-                    ListScannedActivity::class.java
-                )
-            )
-        }
-        btnAbout.setOnClickListener {
-            startActivity(
-                Intent(
-                    applicationContext,
-                    AboutActivity::class.java
-                )
-            )
         }
     }
 }

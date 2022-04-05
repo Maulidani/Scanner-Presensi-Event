@@ -8,34 +8,33 @@
     tools:context=".ui.MainActivity">
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnScanned"
+        android:id="@+id/btnStartScan"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="140dp"
         android:paddingVertical="18dp"
-        android:text="Scanned"
+        android:text="Mulai scan"
         android:textSize="18sp"
         app:cornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnStartScan"
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingVertical="18dp"
-        android:text="Mulai scan"
-        android:textSize="18sp"
-        app:cornerRadius="16dp"
-        app:layout_constraintBottom_toTopOf="@id/btnScanned" />
+        android:layout_height="0dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="60dp"
+        android:src="@drawable/logo_digitix"
+        app:layout_constraintBottom_toTopOf="@+id/btnStartScan"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnAbout"
+    <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingVertical="18dp"
-        android:text="About"
-        android:textSize="18sp"
-        app:cornerRadius="16dp"
-        app:layout_constraintTop_toBottomOf="@id/btnScanned" />
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:text="Digital Invitation"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

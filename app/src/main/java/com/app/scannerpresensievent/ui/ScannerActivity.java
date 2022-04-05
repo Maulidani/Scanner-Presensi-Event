@@ -1,18 +1,19 @@
 package com.app.scannerpresensievent.ui;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
-import android.Manifest;
-import android.content.Intent;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.app.scannerpresensievent.R;
 import com.app.scannerpresensievent.model.DataModel;
@@ -31,10 +32,8 @@ import retrofit2.Response;
 public class ScannerActivity extends AppCompatActivity {
 
     private CodeScanner codeScanner;
-    private ConstraintLayout layoutScanner;
+    private ProgressBar pbLoading;
     private static final int REQUEST_CODE_CAMERA = 1;
-    private int idNra;
-    private String idPresensi;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -43,8 +42,9 @@ public class ScannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scanner);
         getSupportActionBar().hide();
 
-        layoutScanner = findViewById(R.id.layoutScanner);
+        ConstraintLayout layoutScanner = findViewById(R.id.layoutScanner);
         CodeScannerView scannerView = findViewById(R.id.scanner);
+        pbLoading = findViewById(R.id.pbLoading);
 
         codeScanner = new CodeScanner(this, scannerView);
 
@@ -98,6 +98,8 @@ public class ScannerActivity extends AppCompatActivity {
 
     private void scanner(String idKegiatan) {
 
+        pbLoading.setVisibility(View.VISIBLE);
+
         ApiService api = ApiClient.INSTANCE.getInstances();
         Call<ResponseModel> call = api.scanner(idKegiatan);
         call.enqueue(new Callback<ResponseModel>() {
@@ -109,24 +111,69 @@ public class ScannerActivity extends AppCompatActivity {
 
                     if (message.equals("Success")) {
                         DataModel data = response.body().getData();
-                        Toast.makeText(getApplicationContext(), data.getStatus(), Toast.LENGTH_LONG).show();
+                        showDialog(data.getStatus());
                     } else {
-                        Toast.makeText(getApplicationContext(), "Gagal", Toast.LENGTH_LONG).show();
+                        showDialog("Gagal");
                     }
                     Log.e("onResponse: ", response.body().toString());
                 } else {
 
-                    Toast.makeText(getApplicationContext(), "Gagal", Toast.LENGTH_LONG).show();
+                    showDialog("Gagal");
                 }
+
             }
 
             @Override
             public void onFailure(Call<ResponseModel> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Periksa koneksi internet", Toast.LENGTH_LONG).show();
                 Log.e("onResponse: ", t.toString());
-
+                showDialog("Gagal");
             }
         });
     }
 
+    private void showDialog(String status) {
+
+        pbLoading.setVisibility(View.INVISIBLE);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+                this);
+
+        // set title dialog
+        alertDialogBuilder.setTitle("Status");
+
+        // set pesan dari dialog
+
+        if (status.equals("Gagal")) {
+            alertDialogBuilder
+                    .setMessage("Gagal / Event tidak ada")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // do something
+                            codeScanner.startPreview();
+
+                        }
+                    });
+        } else {
+            alertDialogBuilder
+                    .setMessage(status+" / Berhasil Scan")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            // do something
+                            codeScanner.startPreview();
+
+                        }
+                    });
+        }
+
+        // membuat alert dialog dari builder
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // menampilkan alert dialog
+        alertDialog.show();
+    }
 }
