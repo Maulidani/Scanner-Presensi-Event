@@ -3,7 +3,7 @@ package com.app.scannerpresensievent.model
 data class ResponseModel(
     val message: String,
     val status: Boolean,
-    val data: DataModel
+    val data: DataModel,
 )
 
 data class DataModel(

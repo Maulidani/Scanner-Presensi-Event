@@ -2,6 +2,7 @@ package com.app.scannerpresensievent.ui;
 
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +17,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.app.scannerpresensievent.R;
-import com.app.scannerpresensievent.model.DataModel;
 import com.app.scannerpresensievent.model.ResponseModel;
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
@@ -25,6 +25,9 @@ import com.google.zxing.Result;
 import com.skripsi.traditionalfood.network.ApiClient;
 import com.skripsi.traditionalfood.network.ApiService;
 
+import org.json.JSONObject;
+
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,7 +57,10 @@ public class ScannerActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+
                         scanner(result.getText());
+//                        Toast.makeText(getApplicationContext(), result.getText(), Toast.LENGTH_LONG).show();
+
                     }
                 });
             }
@@ -106,28 +112,37 @@ public class ScannerActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ResponseModel> call, Response<ResponseModel> response) {
 
-                if (response.isSuccessful()) {
+
+                if (response.isSuccessful() && response.code() == 200) {
                     String message = response.body().getMessage();
 
                     if (message.equals("Success")) {
-                        DataModel data = response.body().getData();
-                        showDialog(data.getStatus());
-                    } else {
-                        showDialog("Gagal");
-                    }
-                    Log.e("onResponse: ", response.body().toString());
-                } else {
 
-                    showDialog("Gagal");
+                        showDialog(message);
+                    } else {
+
+                        showDialog(message);
+                    }
+
+                } else {
+                    try {
+                        JSONObject jObjError = new JSONObject(response.errorBody().string());
+                        String message = jObjError.getString("message");
+
+                        showDialog(message);
+
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
                 }
 
             }
 
             @Override
             public void onFailure(Call<ResponseModel> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Periksa koneksi internet", Toast.LENGTH_LONG).show();
+//                Toast.makeText(getApplicationContext(), "Periksa koneksi internet", Toast.LENGTH_LONG).show();
                 Log.e("onResponse: ", t.toString());
-                showDialog("Gagal");
+                showDialog("Gagal, terjadi kesalahan");
             }
         });
     }
@@ -136,44 +151,21 @@ public class ScannerActivity extends AppCompatActivity {
 
         pbLoading.setVisibility(View.INVISIBLE);
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                this);
+        if (status.equals("Success")) {
 
-        // set title dialog
-        alertDialogBuilder.setTitle("Status");
+            SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.SUCCESS_TYPE);
+            pDialog.setTitleText(status);
+            pDialog.setContentText("Berhasil Scan");
+            pDialog.setCancelable(false);
+            pDialog.show();
 
-        // set pesan dari dialog
-
-        if (status.equals("Gagal")) {
-            alertDialogBuilder
-                    .setMessage("Gagal / Event tidak ada")
-                    .setCancelable(false)
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // do something
-                            codeScanner.startPreview();
-
-                        }
-                    });
         } else {
-            alertDialogBuilder
-                    .setMessage(status+" / Berhasil Scan")
-                    .setCancelable(false)
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            // do something
-                            codeScanner.startPreview();
 
-                        }
-                    });
+            SweetAlertDialog pDialog = new SweetAlertDialog(this, SweetAlertDialog.ERROR_TYPE);
+            pDialog.setTitleText(status);
+            pDialog.setCancelable(false);
+            pDialog.show();
         }
 
-        // membuat alert dialog dari builder
-        AlertDialog alertDialog = alertDialogBuilder.create();
-
-        // menampilkan alert dialog
-        alertDialog.show();
     }
 }
